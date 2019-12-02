@@ -7,7 +7,7 @@ from numpy import ndarray
 from torch import cat as pt_cat, zeros as pt_zeros, \
     ones as pt_ones, from_numpy, Tensor
 
-__author__ = 'Konstantinos Drossos'
+__author__ = 'Konstantinos Drossos -- Tampere University'
 __docformat__ = 'reStructuredText'
 __all__ = ['clotho_collate_fn']
 
