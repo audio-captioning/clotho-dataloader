@@ -13,7 +13,9 @@ __all__ = ['clotho_collate_fn']
 
 
 def clotho_collate_fn(batch: MutableSequence[ndarray],
-                      nb_t_steps: Union[AnyStr, Tuple[int, int]]) \
+                      nb_t_steps: Union[AnyStr, Tuple[int, int]],
+                      input_pad_at: str,
+                      output_pad_at: str) \
         -> Tuple[Tensor, Tensor]:
     """Pads data.
 
@@ -24,6 +26,12 @@ def clotho_collate_fn(batch: MutableSequence[ndarray],
                        'max', 'min', or exact number\
                        e.g. (1024, 10).
     :type nb_t_steps: str|(int, int)
+    :param input_pad_at: Pad input at the start or\
+                         at the end?
+    :type input_pad_at: str
+    :param output_pad_at: Pad output at the start or\
+                          at the end?
+    :type output_pad_at: str
     :return: Padded data.
     :rtype: torch.Tensor, torch.Tensor
     """
@@ -34,17 +42,39 @@ def clotho_collate_fn(batch: MutableSequence[ndarray],
     else:
         in_t_steps, out_t_steps = nb_t_steps
 
-    input_features = batch[0][0].shape[-1]
+    in_dim = batch[0][0].shape[-1]
     eos_token = batch[0][1][-1]
 
-    input_tensor = pt_cat([pt_cat([
-        pt_zeros(in_t_steps - i[0].shape[0], input_features).float(),
-        from_numpy(i[0]).float()]).unsqueeze(0) for i in batch])
+    input_tensor, output_tensor = [], []
 
-    output_tensor = pt_cat([pt_cat([
-        from_numpy(i[1]).long(),
-        pt_ones(out_t_steps - len(i[1])).mul(eos_token).long()]).unsqueeze(0)
-                            for i in batch])
+    for in_b, out_b in batch:
+        if in_t_steps >= in_b.shape[0]:
+            padding = pt_zeros(in_t_steps - in_b.shape[0], in_dim).float()
+            data = [from_numpy(in_b).float()]
+            if input_pad_at.lower() == 'start':
+                data.insert(0, padding)
+            else:
+                data.append(padding)
+            tmp_in: Tensor = pt_cat(data)
+        else:
+            tmp_in: Tensor = from_numpy(in_b[:in_t_steps, :]).float()
+        input_tensor.append(tmp_in.unsqueeze_(0))
+
+        if out_t_steps >= out_b.shape[0]:
+            padding = pt_ones(out_t_steps - len(out_b)).mul(eos_token).long()
+            data = [from_numpy(out_b).long()]
+            if output_pad_at.lower() == 'start':
+                data.insert(0, padding)
+            else:
+                data.append(padding)
+
+            tmp_out: Tensor = pt_cat(data)
+        else:
+            tmp_out: Tensor = from_numpy(out_b[:out_t_steps]).long()
+        output_tensor.append(tmp_out.unsqueeze_(0))
+
+    input_tensor = pt_cat(input_tensor)
+    output_tensor = pt_cat(output_tensor)
 
     return input_tensor, output_tensor
 
