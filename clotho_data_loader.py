@@ -24,6 +24,8 @@ def get_clotho_loader(data_dir: Path,
                       nb_t_steps_pad: Union[AnyStr, Tuple[int, int]],
                       shuffle: Optional[bool] = True,
                       drop_last: Optional[bool] = True,
+                      input_pad_at: Optional[str] = 'start',
+                      output_pad_at: Optional[str] = 'end',
                       num_workers: Optional[int] = 1) \
         -> DataLoader:
     """Gets the clotho data loader.
@@ -54,10 +56,16 @@ def get_clotho_loader(data_dir: Path,
     :param drop_last: Drop the last examples if not making\
                       a batch of `batch_size`? Defaults to True.
     :type drop_last: bool, optional
+    :param input_pad_at: Pad input at the start or\
+                         at the end?
+    :type input_pad_at: str
+    :param output_pad_at: Pad output at the start or\
+                          at the end?
+    :type output_pad_at: str
     :param num_workers: Amount of workers, defaults to 1.
     :type num_workers: int, optional
-    :return:
-    :rtype:
+    :return: Dataloader for Clotho data.
+    :rtype: torch.utils.data.dataloader.DataLoader
     """
     dataset: ClothoDataset = ClothoDataset(
         data_dir=data_dir, split=split,
@@ -65,8 +73,11 @@ def get_clotho_loader(data_dir: Path,
         output_field_name=output_field_name,
         load_into_memory=load_into_memory)
 
-    collate_fn: Callable = partial(clotho_collate_fn,
-                                   nb_t_steps=nb_t_steps_pad)
+    collate_fn: Callable = partial(
+        clotho_collate_fn,
+        nb_t_steps=nb_t_steps_pad,
+        input_pad_at=input_pad_at,
+        output_pad_at=output_pad_at)
 
     return DataLoader(
         dataset=dataset, batch_size=batch_size,
