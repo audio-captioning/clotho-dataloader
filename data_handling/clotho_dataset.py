@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from typing import Tuple, List, AnyStr
+from typing import Tuple, List, AnyStr, Union
 from pathlib import Path
 
 from numpy import ndarray, recarray
@@ -50,7 +50,8 @@ class ClothoDataset(Dataset):
             self.examples: List[recarray] = [np_load(str(f), allow_pickle=True)
                                              for f in self.examples]
 
-    def __len__(self) -> int:
+    def __len__(self) \
+            -> int:
         """Gets the amount of examples in the dataset.
 
         :return: Amount of examples in the dataset.
@@ -58,7 +59,9 @@ class ClothoDataset(Dataset):
         """
         return len(self.examples)
 
-    def __getitem__(self, item: int) -> Tuple[ndarray, ndarray]:
+    def __getitem__(self,
+                    item: int) \
+            -> Tuple[ndarray, ndarray]:
         """Gets an example from the dataset.
 
         :param item: Index of the item.
@@ -66,7 +69,7 @@ class ClothoDataset(Dataset):
         :return: Input and output values.
         :rtype: numpy.ndarray. numpy.ndarray
         """
-        ex: recarray = self.examples[item]
+        ex: Union[Path, recarray] = self.examples[item]
         if not self.load_into_memory:
             ex: recarray = np_load(str(ex), allow_pickle=True)
 
