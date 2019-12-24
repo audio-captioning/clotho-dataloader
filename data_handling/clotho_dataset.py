@@ -19,7 +19,8 @@ class ClothoDataset(Dataset):
                  split: AnyStr,
                  input_field_name: AnyStr,
                  output_field_name: AnyStr,
-                 load_into_memory: bool):
+                 load_into_memory: bool) \
+            -> None:
         """Initialization of a Clotho dataset object.
 
         :param data_dir: Directory with data.
