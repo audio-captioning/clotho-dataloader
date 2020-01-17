@@ -12,6 +12,8 @@ DataLoader from PyTorch. Nevertheless, the Clotho dataset has sequences as input
 and each sequence is of arbitrary length (15 to 30 seconds for the input and 8 to 20 words 
 for the output). For that reason, this data loader already provides a collate function. 
 
+This repository is maintained by [K. Drossos](https://github.com/dr-costas).
+
 ## Collate function
 
 To be able to use the sequences of Clotho in a batch, you most likely will need some kind of padding
