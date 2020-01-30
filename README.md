@@ -1,6 +1,6 @@
 # Clotho data handling
 
-Welcome to Clotho data loader repository. This repository has the necessary code for
+Welcome to Clotho data handling repository. This repository has the necessary code for
 using the DataLoader class from PyTorch package (`torch.utils.data.dataloader.DataLoader`)
 with the Clotho dataset. 
 
