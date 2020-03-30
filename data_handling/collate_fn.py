@@ -36,7 +36,7 @@ def clotho_collate_fn(batch: MutableSequence[ndarray],
     :rtype: torch.Tensor, torch.Tensor
     """
     if type(nb_t_steps) == str:
-        truncate_fn = max if nb_t_steps.lower == 'max' else min
+        truncate_fn = max if nb_t_steps.lower() == 'max' else min
         in_t_steps = truncate_fn([i[0].shape[0] for i in batch])
         out_t_steps = truncate_fn([i[1].shape[0] for i in batch])
     else:
